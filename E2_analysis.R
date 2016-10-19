@@ -4,7 +4,6 @@
 ## Analysis of second ACE experiment
 
 ## TO DO:
-# - check shoot/dance
 # - am I sure that the direction is right?
 
 
@@ -192,7 +191,7 @@ write.table(xdescripts, file = 'second_descriptive.csv',
 
 ## Fit model, full RT:
 
-# second$RT <- second$LogFullRT	# change to SentenceRT or MoveRT for other effects
+second$RT <- second$LogFullRT	# change to SentenceRT or MoveRT for other effects
 second$RT <- second$LogMoveRT
 second$RT <- second$LogSentRT
 summary(xmdl.cond <- lmer(RT ~ Condition * Direction +
@@ -242,10 +241,15 @@ anova(xmdl.freq.nodir, xmdl.freq.noint, test = 'Chisq')
 
 ## Create a model of Condition controlling for frequency:
 
-summary(xmdl.both <- lmer(SentRT ~ LogFreq_c + Condition +
+summary(xmdl.both <- lmer(RT ~ LogFreq_c + Condition +
 	CrossRT_c + Trial_c + 
 	(1 + LogFreq_c + Condition|Sub) + (1|Item),
 	data = second, REML = F))
+summary(xmdl.both.nocond <- lmer(RT ~ LogFreq_c + 
+	CrossRT_c + Trial_c + 
+	(1 + LogFreq_c + Condition|Sub) + (1|Item),
+	data = second, REML = F))
+anova(xmdl.both.nocond, xmdl.both, test = 'Chisq')
 
 ## Get predictions for the condition effect:
 

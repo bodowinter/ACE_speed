@@ -3,7 +3,6 @@
 ## Revised: September 14, 2016
 ## Analysis of third ACE experiment
 
-
 # - am I sure that the direction is right?
 
 ##------------------------------------------------------------------
@@ -22,7 +21,7 @@ options(dplyr.width = Inf)
 
 ## Load in data:
 
-setwd('/Users/teeniematlock/Desktop/research/marcus_ACE/analysis/')
+setwd('/Users/winterb/Research/marcus_ACE/analysis/')
 third <- read.csv('E3.csv') %>% tbl_df()
 
 ## Get rid of practice trials and filler items:
@@ -39,7 +38,8 @@ third <- third %>% select(Subject, Age, Sex, Handedness,
 
 ## The direction variable is miscoded, the CorrectResponse give indication:
 
-third <- third %>% mutate(Direction = ifelse(CorrectResponse == 9, 'right', 'left'))
+third <- third %>%
+	mutate(Direction = ifelse(CorrectResponse == 9, 'right', 'left'))
 
 ## Create an accuracy variable:
 
@@ -220,6 +220,18 @@ summary(xmdl.freq.nodir <- lmer(RT ~ LogFreq_c +
 anova(xmdl.freq.noint, xmdl.freq, test = 'Chisq')
 anova(xmdl.freq.nocond, xmdl.freq.noint, test = 'Chisq')
 anova(xmdl.freq.nodir, xmdl.freq.noint, test = 'Chisq')
+
+## Create a model of Condition controlling for frequency:
+
+summary(xmdl.both <- lmer(RT ~ LogFreq_c + Condition +
+	CrossRT_c + Trial_c + 
+	(1 + LogFreq_c + Condition|Sub) + (1|Item),
+	data = third, REML = F))
+summary(xmdl.both.nocond <- lmer(RT ~ LogFreq_c + 
+	CrossRT_c + Trial_c + 
+	(1 + LogFreq_c + Condition|Sub) + (1|Item),
+	data = third, REML = F))
+anova(xmdl.both.nocond, xmdl.both, test = 'Chisq')
 
 ## Get predictions for the condition effect:
 
